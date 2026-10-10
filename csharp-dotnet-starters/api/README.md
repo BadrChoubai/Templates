@@ -12,7 +12,7 @@ Ensure you have the following installed:
 
 ## Run the application locally
 
-All commands below are run from the `Api/` project directory.
+Unless noted otherwise, commands below are run from the `Api/` project directory.
 
 ```sh
 cd Api
@@ -57,6 +57,18 @@ The API is then available at `http://localhost:8086`.
 `/items` is limited to 100 requests per minute per user, or per client IP for
 anonymous callers. Override the limits in the `RateLimiting` configuration
 section (for example `RateLimiting__TokenLimit=10`).
+
+### Testing
+
+Run from the repository root (where `Api.slnx` lives):
+
+```sh
+dotnet test
+```
+
+`Api.Tests` hosts the API in memory with `WebApplicationFactory` and swaps the
+database for an in-memory SQLite connection (see `Api.Tests/ApiFactory.cs`).
+Tests use xUnit v3 on Microsoft.Testing.Platform, enabled in `global.json`.
 
 ### Linting
 

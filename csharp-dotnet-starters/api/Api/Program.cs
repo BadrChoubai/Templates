@@ -36,3 +36,6 @@ if (args.Length == 1 && args[0].Equals("seed", StringComparison.OrdinalIgnoreCas
 }
 
 app.Run();
+
+// Exposes the implicit Program class to WebApplicationFactory in Api.Tests.
+public partial class Program;

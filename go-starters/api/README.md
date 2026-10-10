@@ -53,6 +53,16 @@ To stop and remove the docker compose containers:
 make clean
 ```
 
+### Testing
+
+```sh
+make test
+```
+
+Handler tests use a fake repository (`internal/handlers`), and repository tests
+run against a temporary SQLite database built from the files in
+`migrations/migrations` (`internal/repository`).
+
 ### Linting
 
 To check code quality using `golangci-lint`:
