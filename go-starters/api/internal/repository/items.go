@@ -17,6 +17,7 @@ var _ Repository = (*ItemsRepository)(nil)
 type Repository interface {
 	GetAll() ([]*data.Item, error)
 	GetByID(id uuid.UUID) (*data.Item, error)
+	Create(item *data.Item) error
 }
 
 // ItemsRepository is a Repository backed by a SQL database.
@@ -95,4 +96,18 @@ WHERE id = ?;
 	}
 
 	return &item, nil
+}
+
+// Create inserts item.
+func (r *ItemsRepository) Create(item *data.Item) error {
+	query := `
+INSERT INTO items (id, name, description)
+VALUES (?, ?, ?);
+`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := r.db.ExecContext(ctx, query, item.ID.String(), item.Name, item.Description)
+	return err
 }

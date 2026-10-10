@@ -33,6 +33,42 @@ The API is then available at `http://localhost:8086`. In Development, the
 OpenAPI document is served at `/openapi/v1.json` and Swagger UI at `/`. See
 `Api.http` for example requests.
 
+### Endpoints
+
+| Method | Path          | Description                                     |
+| :----- | :------------ | :---------------------------------------------- |
+| GET    | `/health`     | Health check                                    |
+| GET    | `/items`      | List items                                      |
+| GET    | `/items/{id}` | Get an item, or `404`                           |
+| POST   | `/items`      | Create an item; responds `201` with `Location`  |
+
+`POST /items` takes `{"name": "...", "description": "..."}`. `name` is required
+and at most 255 characters; `description` is optional and at most 1024
+characters. Validation uses DataAnnotations on `Api/Model/CreateItemRequest.cs`
+with .NET's built-in minimal API validation (`AddValidation`).
+
+### Errors
+
+Every error response is an [RFC 9457 Problem Details][rfc9457] object
+(`application/problem+json`), including framework errors such as unmatched
+routes and rate limiting. Validation errors list messages per request field
+under `errors`, keyed by JSON field name:
+
+```json
+{
+  "type": "about:blank",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "name": ["name is required"]
+  },
+  "traceId": "00-..."
+}
+```
+
+This matches the Go starter's format; ASP.NET Core also adds a `traceId`.
+Configuration lives in `Api/Extensions/MiddlewareExtensions.cs`.
+
 ### Database Migrations
 
 Migrations live in `Api/Migrations`. After changing the model, add a migration
@@ -82,3 +118,5 @@ dotnet format
 2. Replace the example `items` resource (`Api/Model`, `Api/Repository`,
    `Api/Service`, `Api/Endpoints.cs`, `Api/DataSeeder.cs`) with your own, then
    delete `Api/Migrations` and run `dotnet ef migrations add Initial`.
+
+[rfc9457]: https://www.rfc-editor.org/rfc/rfc9457

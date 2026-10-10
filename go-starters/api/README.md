@@ -92,7 +92,7 @@ Database migrations are driven by tasks in `/migrations/Makefile`.
 │   ├── repository/   # Database access
 │   └── routes/       # Route registration
 ├── migrations/       # SQL migrations and database Makefile tasks
-├── pkg/              # Reusable packages (database, encoding, middleware, observability)
+├── pkg/              # Reusable packages (database, encoding, middleware, observability, problem)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── Makefile

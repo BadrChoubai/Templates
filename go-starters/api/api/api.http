@@ -9,3 +9,13 @@ GET {{HostAddress}}/items/c04ab9a0-e398-471d-8cfe-95317ccf0a20
 Accept: application/json
 
 ###
+
+POST {{HostAddress}}/items
+Content-Type: application/json
+
+{
+  "name": "New item",
+  "description": "Created from api.http"
+}
+
+###

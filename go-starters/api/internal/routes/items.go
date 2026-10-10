@@ -19,4 +19,5 @@ func NewItemsRouter(mux *http.ServeMux, db *sql.DB) {
 func addRoutes(mux *http.ServeMux, itemsRepository *repository.ItemsRepository) {
 	mux.Handle("GET /items", handlers.GetItems(itemsRepository))
 	mux.Handle("GET /items/{id}", handlers.GetItem(itemsRepository))
+	mux.Handle("POST /items", handlers.CreateItem(itemsRepository))
 }

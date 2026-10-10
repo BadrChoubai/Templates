@@ -25,4 +25,17 @@ public class ItemsService : IApiService
         _logger.LogInformation("Getting an item");
         return await _repository.GetItem(id);
     }
+
+    public async Task<Item> CreateItem(CreateItemRequest request)
+    {
+        var item = new Item
+        {
+            Name = request.Name ?? string.Empty,
+            Description = request.Description ?? string.Empty
+        };
+
+        _logger.LogInformation("Creating an item");
+        await _repository.AddItem(item);
+        return item;
+    }
 }

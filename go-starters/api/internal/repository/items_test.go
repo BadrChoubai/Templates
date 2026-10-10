@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/badrchoubai/api/internal/data"
 	"github.com/badrchoubai/api/pkg/database"
 )
 
@@ -71,5 +72,22 @@ func TestItemsRepositoryGetByIDNotFound(t *testing.T) {
 	_, err := repo.GetByID(uuid.Nil)
 	if !errors.Is(err, sql.ErrNoRows) {
 		t.Errorf("err = %v, want sql.ErrNoRows", err)
+	}
+}
+
+func TestItemsRepositoryCreate(t *testing.T) {
+	repo := NewItemsRepository(newTestDB(t))
+	item := &data.Item{ID: uuid.New(), Name: "New item", Description: "Created in a test"}
+
+	if err := repo.Create(item); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	got, err := repo.GetByID(item.ID)
+	if err != nil {
+		t.Fatalf("GetByID: %v", err)
+	}
+	if *got != *item {
+		t.Errorf("stored item = %+v, want %+v", got, item)
 	}
 }
