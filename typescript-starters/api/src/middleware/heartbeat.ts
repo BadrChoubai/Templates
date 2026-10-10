@@ -2,14 +2,14 @@ import type { Request, Response, NextFunction } from "express";
 
 const OK: string = "OK";
 
+/**
+ * Responds 200 OK to GET and HEAD requests and passes any other method on.
+ */
 export const heartbeat = (req: Request, res: Response, next: NextFunction) => {
-  if (req.method === "GET") {
-    res.setHeader("Content-Type", "text/plain");
-    res.status(200).send(OK);
-  } else if (req.method === "HEAD") {
-    res.setHeader("Content-Type", "text/plain");
-    res.status(200);
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    next();
+    return;
   }
 
-  next();
+  res.status(200).type("text/plain").send(OK);
 };

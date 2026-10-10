@@ -11,10 +11,10 @@ Replace `items` with your own resources when starting a project.
 
 | Template                    | Language   | Stack                          |
 | :-------------------------- | :--------- | :----------------------------- |
-| [Go][go]                    | Go         | `net/http`, SQLite             |
-| [TypeScript][typescript]    | TypeScript | Express, `node:sqlite`         |
-| [C#][csharp]                | C#         | ASP.NET Core, EF Core (SQLite) |
-| [Python][python]            | Python     | FastAPI, SQLModel (in-memory)  |
+| [Go][go]                    | Go         | `net/http`, SQLite (Go 1.26)   |
+| [TypeScript][typescript]    | TypeScript | Express 5, `node:sqlite`       |
+| [C#][csharp]                | C#         | ASP.NET Core 10, EF Core       |
+| [Python][python]            | Python     | FastAPI, SQLModel, Alembic     |
 
 Each template is self-contained and documents how to build, run, and adapt it in its own README.
 

@@ -1,5 +1,3 @@
-using Asp.Versioning;
-
 using Api.Repository;
 using Api.Service;
 
@@ -10,18 +8,13 @@ namespace Api.Extensions;
 /// </summary>
 public static class ApplicationServices
 {
+    private const string DefaultConnectionString = "Data Source=.db/api.db";
+
     public static void AddServices(
         this IServiceCollection services
     )
     {
-        services.AddEndpointsApiExplorer();
         services.AddRouting(options => options.LowercaseUrls = true);
-        services.AddApiVersioning(options =>
-        {
-            options.DefaultApiVersion = new ApiVersion(1, 0);
-            options.AssumeDefaultVersionWhenUnspecified = true;
-            options.ReportApiVersions = true;
-        });
 
         // Register Services
         services.AddScoped<IDataRepository, DataRepository>();
@@ -33,7 +26,7 @@ public static class ApplicationServices
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DbConnectionString") ?? "Data Source=.db/api.db";
+        var connectionString = configuration.GetConnectionString("DbConnectionString") ?? DefaultConnectionString;
         services.AddSqlite<ApiDbContext>(connectionString);
     }
 }

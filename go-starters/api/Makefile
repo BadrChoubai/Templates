@@ -1,17 +1,22 @@
-include .env
+-include .env
 include migrations/Makefile
 
 all: # @HELP builds the docker image for our application
 all:
 	docker build \
 	--progress=plain \
-	--build-arg OS=$(OS) --build-arg ARCH=$(ARCH) \
-	-t $(REGISTRY)/$(DOCKER_IMAGE_NAME) \
+	--build-arg GO_VERSION=$(GO_VERSION) --build-arg OS=$(OS) --build-arg ARCH=$(ARCH) \
+	-t $(REGISTRY)/$(DOCKER_IMAGE) \
 	-f Dockerfile .
+
+dev: # @HELP run the application locally with go run
+dev:
+	mkdir -p .db
+	go run ./cmd/api
 
 run: # @HELP run the application image locally with docker compose
 run: all
-	DOCKER_IMAGE=$(DOCKER_IMAGE_NAME) \
+	DOCKER_IMAGE=$(DOCKER_IMAGE) \
 	REGISTRY=$(REGISTRY) \
 	docker compose up
 
@@ -25,6 +30,8 @@ lint:
 
 clean: # @HELP cleans temporary files and build artifacts created during development
 clean:
+	DOCKER_IMAGE=$(DOCKER_IMAGE) \
+	REGISTRY=$(REGISTRY) \
 	docker compose down
 
 help-vars:
@@ -45,17 +52,15 @@ help: help-vars help-targets
 
 # REGISTRY: Where should Docker images be pushed once they're built?
 REGISTRY ?= localhost:5000
+# DOCKER_IMAGE: Name of the Docker image to build
+DOCKER_IMAGE ?= api
+# GO_VERSION: Go version of the image used to build the application
+GO_VERSION ?= 1.26
 # OS: Used internally. Users should pass GOOS and/or GOARCH.
 OS := $(if $(GOOS),$(GOOS),$(shell GOTOOLCHAIN=local go env GOOS))
 # ARCH: Used internally. Users should pass GOOS and/or GOARCH.
 ARCH := $(if $(GOARCH),$(GOARCH),$(shell GOTOOLCHAIN=local go env GOARCH))
 
-GO_VERSION := 1.23
-CONTAINER_IMAGE := golang:$(GO_VERSION)-alpine
-DOCKER_IMAGE_NAME ?= api
-VERSION ?= 1.0
-TAG := $(VERSION)__$(OS)_$(ARCH)
-
-SHELL ?= /usr/bin/env bash -o errexit -o pipefail -o nounset
+SHELL := /usr/bin/env bash -o errexit -o pipefail -o nounset
 .DEFAULT_GOAL = all
-.PHONY: all activate clean format help lint run test
+.PHONY: all clean dev help help-targets help-vars lint run test

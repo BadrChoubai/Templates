@@ -14,5 +14,11 @@ class ItemCreate(ItemBase):
     pass
 
 
-class Item(ItemBase):
-    id: uuid.UUID = Field(primary_key=True)
+class Item(ItemBase, table=True):
+    __tablename__ = "items"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+class ItemPublic(ItemBase):
+    id: uuid.UUID

@@ -36,7 +36,7 @@ Run the following `make` commands as needed:
 make db/info
 ```
 
-Prints the value of `DB_CONNECTION_STRING`.
+Prints the database URL passed to `migrate`.
 
 ### Connect to the Database
 
@@ -72,17 +72,11 @@ Drops all tables and reruns the migrations from scratch.
 
 ## Environment Variables
 
-Ensure you set the `DB_CONNECTION_STRING` environment variable before running
-these commands. Example:
+The database file is set by `DB_CONNECTION_STRING` (default `.db/api.db`), the
+same variable the application reads. Set it in `.env` or pass it to `make`:
 
 ```sh
-export DB_CONNECTION_STRING="database.sqlite"
-```
-
-You may also pass it to `make`
-
-```sh
-make DB_CONNECTION_STRING="sqlite3:/$(pwd)/.db/api.db" db/version
+make DB_CONNECTION_STRING=".db/other.db" db/migrations/up
 ```
 
 ---

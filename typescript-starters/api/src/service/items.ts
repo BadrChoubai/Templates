@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import { ItemDbResponse } from "../models/Item.js";
 
 export class ItemsService {
   private _db: DatabaseSync;
@@ -7,22 +8,22 @@ export class ItemsService {
     this._db = db;
   }
 
-  async getAll(): Promise<unknown[]> {
+  async getAll(): Promise<ItemDbResponse[]> {
     const query = this._db.prepare(`
       SELECT id, name, description
       FROM items
     `);
 
-    return query.all();
+    return query.all() as ItemDbResponse[];
   }
 
-  async getOne(id: string): Promise<unknown> {
+  async getOne(id: string): Promise<ItemDbResponse | undefined> {
     const query = this._db.prepare(`
       SELECT id, name, description
       FROM items
       WHERE id = ?
     `);
 
-    return query.get(id);
+    return query.get(id) as ItemDbResponse | undefined;
   }
 }

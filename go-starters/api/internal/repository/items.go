@@ -1,30 +1,37 @@
+// Package repository provides database access for the API's resources.
 package repository
 
 import (
 	"context"
 	"database/sql"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/badrchoubai/api/internal/data"
 )
 
 var _ Repository = (*ItemsRepository)(nil)
 
+// Repository reads items from storage.
 type Repository interface {
 	GetAll() ([]*data.Item, error)
 	GetByID(id uuid.UUID) (*data.Item, error)
 }
+
+// ItemsRepository is a Repository backed by a SQL database.
 type ItemsRepository struct {
 	db *sql.DB
 }
 
+// NewItemsRepository returns an ItemsRepository using db.
 func NewItemsRepository(db *sql.DB) *ItemsRepository {
 	return &ItemsRepository{
 		db: db,
 	}
 }
 
+// GetAll returns every item.
 func (r *ItemsRepository) GetAll() ([]*data.Item, error) {
 	query := `
 SELECT id, name, description
@@ -39,7 +46,7 @@ FROM items;
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	items := []*data.Item{}
 
@@ -47,7 +54,7 @@ FROM items;
 		var item data.Item
 
 		err := rows.Scan(
-			&item.Id,
+			&item.ID,
 			&item.Name,
 			&item.Description,
 		)
@@ -79,7 +86,7 @@ WHERE id = ?;
 	var item data.Item
 
 	err := r.db.QueryRowContext(ctx, query, id.String()).Scan(
-		&item.Id,
+		&item.ID,
 		&item.Name,
 		&item.Description,
 	)

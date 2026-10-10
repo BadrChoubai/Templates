@@ -1,29 +1,27 @@
+// Package database opens and configures the application's SQLite connection pool.
 package database
 
 import (
 	"context"
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
-	"os"
+	"fmt"
 	"time"
 
-	"github.com/badrchoubai/api/pkg/observability/logging"
+	_ "github.com/mattn/go-sqlite3" // registers the sqlite3 driver
 )
 
 const (
 	maxOpenConns = 5
-	maxLifetime  = 120
 	maxIdleConns = 2
-	maxIdleTime  = 20
+	maxLifetime  = 2 * time.Minute
+	maxIdleTime  = 20 * time.Second
 )
 
+// Open opens a SQLite database at connectionStr and verifies the connection.
 func Open(connectionStr string) (*sql.DB, error) {
-	logger := logging.NewLogger(os.Stdout)
 	db, err := sql.Open("sqlite3", connectionStr)
-
 	if err != nil {
-		logger.Error("opening database", err)
-		return nil, err
+		return nil, fmt.Errorf("opening database: %w", err)
 	}
 
 	db.SetConnMaxLifetime(maxLifetime)
@@ -34,9 +32,9 @@ func Open(connectionStr string) (*sql.DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = db.PingContext(ctx)
-	if err != nil {
-		return nil, err
+	if err := db.PingContext(ctx); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("connecting to database: %w", err)
 	}
 
 	return db, nil

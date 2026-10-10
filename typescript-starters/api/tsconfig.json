@@ -1,31 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": [
-      "es2017",
-    ],
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ],
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "nodenext",
+    "target": "ES2024",
+    "lib": ["ES2024"],
+    "types": ["node"],
     "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "pretty": true,
     "sourceMap": true,
     "rootDir": "./src",
-    "outDir": "./dist",
-    "allowJs": true,
-    "noEmit": false,
-    "esModuleInterop": true,
-    "baseUrl": ".",
+    "outDir": "./dist"
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "tests"
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

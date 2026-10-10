@@ -49,6 +49,7 @@ formatters:
   settings:
     gci:
       sections:
+        - standard
         - default
         - prefix(github.com/badrchoubai)
       custom-order: true

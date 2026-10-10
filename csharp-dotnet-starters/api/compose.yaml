@@ -3,6 +3,11 @@ services:
     image: api
     ports:
       - "8086:8080"
+    volumes:
+      - api-data:/app/.db
     build:
       context: .
       dockerfile: Dockerfile
+
+volumes:
+  api-data:

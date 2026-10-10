@@ -1,3 +1,4 @@
+// Package main is the entry point for the API server.
 package main
 
 import (
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 
@@ -20,12 +20,14 @@ func main() {
 	ctx := context.Background()
 
 	if err := run(ctx, os.Stdout, os.Getenv); err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
 func run(ctx context.Context, stdout io.Writer, getenv func(string) string) error {
-	var wg sync.WaitGroup
+	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	logger := logging.NewLogger(stdout)
 	srv, err := server.NewServer(logger, getenv)
@@ -33,38 +35,22 @@ func run(ctx context.Context, stdout io.Writer, getenv func(string) string) erro
 		return err
 	}
 
-	shutdownError := make(chan error)
-
+	srvErr := make(chan error, 1)
 	go func() {
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-		s := <-quit
-
-		logger.Info(fmt.Sprintf("caught signal: %s", s))
-
-		shutdownCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
-		defer cancel()
-
-		err := srv.Shutdown(shutdownCtx)
-		if err != nil {
-			shutdownError <- err
-		}
-
-		logger.Info("completing background tasks")
-
-		wg.Wait()
-		shutdownError <- nil
+		srvErr <- srv.ListenAndServe()
 	}()
 
-	err = srv.ListenAndServe()
-	if !errors.Is(err, http.ErrServerClosed) {
-		return err
+	select {
+	case err := <-srvErr:
+		if !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+	case <-ctx.Done():
+		logger.Info("caught shutdown signal")
 	}
 
-	err = <-shutdownError
-	if err != nil {
-		return err
-	}
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
-	return nil
+	return srv.Shutdown(shutdownCtx)
 }

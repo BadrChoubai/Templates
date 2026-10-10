@@ -20,7 +20,7 @@ public class ItemsService : IApiService
         return await _repository.GetItems();
     }
 
-    public async Task<Item> GetItem(Guid id)
+    public async Task<Item?> GetItem(Guid id)
     {
         _logger.LogInformation("Getting an item");
         return await _repository.GetItem(id);

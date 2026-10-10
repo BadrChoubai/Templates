@@ -17,11 +17,12 @@ namespace Api.Extensions
             services.AddOptions<TokenBucketRateLimiterOptions>()
                 .Configure(options =>
                 {
-                    options.ReplenishmentPeriod = TimeSpan.FromSeconds(180);
+                    // Defaults; override in the "RateLimiting" configuration section.
+                    options.ReplenishmentPeriod = TimeSpan.FromSeconds(60);
                     options.AutoReplenishment = true;
-                    options.TokenLimit = 10;
-                    options.TokensPerPeriod = 10;
-                    options.QueueLimit = 100;
+                    options.TokenLimit = 100;
+                    options.TokensPerPeriod = 100;
+                    options.QueueLimit = 0; // reject with 429 instead of holding requests
                 }).BindConfiguration("RateLimiting");
 
             services.AddOptions<RateLimiterOptions>()
@@ -32,9 +33,11 @@ namespace Api.Extensions
 
                     options.AddPolicy(Policy, context =>
                     {
-                        var username = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                        Console.WriteLine(username);
-                        return RateLimitPartition.GetTokenBucketLimiter(username,
+                        // Authenticated callers get their own bucket; anonymous callers share one per IP.
+                        var partitionKey = context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                            ?? context.Connection.RemoteIpAddress?.ToString()
+                            ?? "anonymous";
+                        return RateLimitPartition.GetTokenBucketLimiter(partitionKey,
                             _ => perUserRateLimiterOptions.CurrentValue);
                     });
                 });

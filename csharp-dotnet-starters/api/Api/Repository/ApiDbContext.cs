@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-
 using Api.Model;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Repository
 {
@@ -12,6 +12,6 @@ namespace Api.Repository
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         { }
 
-        public DbSet<Item> Items { get; set; }
+        public DbSet<Item> Items => Set<Item>();
     }
 }

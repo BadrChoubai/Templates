@@ -27,7 +27,9 @@ if (app.Environment.IsDevelopment())
 // Setup application endpoints
 Endpoints.MapItemsApi(app);
 
-if (args.Length == 1 && args[0].Equals("seed", StringComparison.CurrentCultureIgnoreCase))
+app.MigrateDatabase();
+
+if (args.Length == 1 && args[0].Equals("seed", StringComparison.OrdinalIgnoreCase))
 {
     app.SeedData();
     return;

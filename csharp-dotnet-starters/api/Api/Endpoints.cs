@@ -12,7 +12,6 @@ internal static class Endpoints
         group.RequirePerUserRateLimit();
 
         group.WithTags("Items");
-        group.WithOpenApi();
 
         group.MapGet("/", async (IApiService service) => await service.GetAll());
         group.MapGet("/{id:guid}", async (IApiService service, Guid id) =>

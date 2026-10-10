@@ -1,13 +1,9 @@
 import winston from "winston";
 
-const transports = [
-  new winston.transports.Console({
-    level: "error",
-  }),
-];
+const level = process.env.LOG_LEVEL || "info";
 
 const loggerInstance = winston.createLogger({
-  level: "error",
+  level,
   levels: winston.config.npm.levels,
   format: winston.format.combine(
     winston.format.timestamp({
@@ -17,7 +13,7 @@ const loggerInstance = winston.createLogger({
     winston.format.splat(),
     winston.format.json(),
   ),
-  transports: transports,
+  transports: [new winston.transports.Console()],
 });
 
 export default loggerInstance;

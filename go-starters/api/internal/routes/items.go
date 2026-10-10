@@ -1,3 +1,4 @@
+// Package routes registers the API's routes on a ServeMux.
 package routes
 
 import (
@@ -8,6 +9,7 @@ import (
 	"github.com/badrchoubai/api/internal/repository"
 )
 
+// NewItemsRouter registers the items routes on mux.
 func NewItemsRouter(mux *http.ServeMux, db *sql.DB) {
 	itemsRepository := repository.NewItemsRepository(db)
 

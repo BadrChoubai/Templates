@@ -1,49 +1,45 @@
 {
-  "author": "Badr Choubai",
-  "description": "TypeScript API starter",
-  "engines": {
-    "node": ">=22.14.0",
-    "npm": "~10"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "uuid": "^11.0.5",
-    "winston": "^3.17.0"
-  },
   "name": "api",
+  "version": "1.0.0",
+  "description": "TypeScript API starter",
+  "author": "Badr Choubai",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "serve": "node dist/index.js",
     "build": "tsc",
-    "database:seed": "node --no-warnings --loader ts-node/esm src/database/seedDb.ts",
+    "serve": "node dist/index.js",
+    "database:seed": "node dist/database/seedDb.js",
     "dev": "npm run develop",
     "develop": "concurrently \"npm run develop:watch\" \"npm run develop:serve\"",
-    "develop:watch": "tsc --watch",
-    "develop:serve": "nodemon dist/index.js",
+    "develop:watch": "tsc --watch --preserveWatchOutput",
+    "develop:serve": "nodemon --watch dist dist/index.js",
     "docker:build": "docker build -t api .",
-    "docker:run": "docker run -p 8080:8082 api",
+    "docker:run": "docker run --rm -p 8082:8082 api",
     "docker:dev": "docker compose up --build",
     "docker:stop": "docker compose down",
-    "lint": "eslint -c eslint.config.js --fix"
+    "lint": "eslint --fix",
+    "typecheck": "tsc --noEmit"
   },
-  "type": "module",
-  "version": "1.0.0",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "winston": "^3.19.0"
+  },
   "devDependencies": {
-    "@eslint/js": "^9.20.0",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.1",
-    "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.24.0",
-    "@typescript-eslint/parser": "^8.24.0",
-    "concurrently": "^9.1.2",
-    "eslint": "^9.20.1",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.3",
-    "globals": "^15.15.0",
-    "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.24.0"
+    "@eslint/js": "^10.0.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globals": "^17.13.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.9",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1"
   }
 }

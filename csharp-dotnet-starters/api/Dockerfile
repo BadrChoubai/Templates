@@ -1,10 +1,11 @@
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
-EXPOSE 8086
-EXPOSE 8087
+# The SQLite database lives in /app/.db; make it writable by the non-root app user.
+RUN mkdir -p /app/.db && chown $APP_UID /app/.db
+USER $APP_UID
+EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Api/Api.csproj", "Api/"]
@@ -21,5 +22,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Api.dll"]
-
-

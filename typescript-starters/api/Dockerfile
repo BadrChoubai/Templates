@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -10,24 +10,26 @@ RUN npm ci
 COPY tsconfig.json ./
 COPY src ./src
 
-RUN mkdir -p /app/.db
-RUN npm run database:seed
-
 RUN npm run build
 
-RUN rm tsconfig.json && rm -rf src
+# Create and seed the example SQLite database
+RUN npm run database:seed
 
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
+
+ENV NODE_ENV=production
 
 WORKDIR /app
 
-COPY --from=builder /app/.db .db
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/package-lock.json ./
+COPY package.json package-lock.json ./
 
 RUN npm ci --omit=dev
 
-EXPOSE 3000
+COPY --from=builder /app/dist ./dist
+COPY --from=builder --chown=node:node /app/.db ./.db
+
+USER node
+
+EXPOSE 8082
 
 CMD ["node", "dist/index.js"]

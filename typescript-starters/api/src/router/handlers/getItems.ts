@@ -1,9 +1,11 @@
+import type { Request, Response } from "express";
+import Logger from "../../logger/winston.js";
 import { ItemsService } from "../../service/items.js";
 import { ItemDbResponse, ItemResponse } from "../../models/Item.js";
 import { transformResponse } from "../../lib/transformResponse.js";
 
 export const getItems = (itemsService: ItemsService) => {
-  return async function (req, res) {
+  return async function (req: Request, res: Response) {
     try {
       const items = await itemsService.getAll();
 
@@ -18,7 +20,7 @@ export const getItems = (itemsService: ItemsService) => {
 
       res.status(200).send(data);
     } catch (error) {
-      console.error("Error fetching items data:", error);
+      Logger.error("Error fetching items data", error);
       res.status(500).send({ error: "Internal server error" });
     }
   };

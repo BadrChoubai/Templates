@@ -1,9 +1,11 @@
+// Package data defines the API's domain types.
 package data
 
 import "github.com/google/uuid"
 
+// Item is the example resource served by the API.
 type Item struct {
-	Id          uuid.UUID `json:"id"`
+	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }

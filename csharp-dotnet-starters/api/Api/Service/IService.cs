@@ -5,5 +5,5 @@ namespace Api.Service;
 public interface IApiService
 {
     Task<List<Item>> GetAll();
-    Task<Item> GetItem(Guid id);
+    Task<Item?> GetItem(Guid id);
 }

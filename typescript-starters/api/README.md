@@ -1,53 +1,72 @@
 # TypeScript API Starter
 
-This is a TypeScript API starter using Express.js and SQLite (`node:sqlite`). It provides a development and production setup with
-TypeScript compilation and linting.
+This is a TypeScript API starter using Express.js and SQLite (`node:sqlite`). It
+provides a development and production setup with TypeScript compilation and
+linting, and exposes an example `items` resource.
 
 ## Prerequisites
 
 Ensure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (Latest LTS recommended)
+- [Node.js](https://nodejs.org/) 24 or later (see `.nvmrc`)
 - [npm](https://www.npmjs.com/) (Comes with Node.js)
 
-#### Development Mode (with Hot Reloading)
+Install dependencies:
+
+```sh
+npm ci
+```
+
+## Running the Application
+
+### Database
+
+The example `items` table lives in a SQLite database at `.db/api.db` (override
+with `DATABASE_PATH`). Build the project, then create and seed the database:
+
+```sh
+npm run build
+npm run database:seed
+```
+
+### Development Mode (with Hot Reloading)
 
 ```sh
 npm run dev
 ```
 
-This will start the TypeScript compiler in watch mode and run the server using `nodemon`.
+This will start the TypeScript compiler in watch mode and run the server using
+`nodemon`. The API is available at `http://localhost:8082` (override with `PORT`).
 
-#### Production Mode
-
-First, build the project:
+### Production Mode
 
 ```sh
 npm run build
-```
-
-Then, start the server:
-
-```sh
 npm run serve
 ```
 
-### Linting
-
-To run ESLint and automatically fix issues:
+### Docker
 
 ```sh
-npm run lint
+npm run docker:dev    # build and start with docker compose
+npm run docker:stop   # stop the containers
 ```
 
-### Database
+The image seeds its own database at build time.
 
-The example `items` table lives in a SQLite database at `.db/api.db`. Create and
-seed it before starting the server:
+## Configuration
+
+| Variable        | Default      | Description                      |
+| :-------------- | :----------- | :------------------------------- |
+| `PORT`          | `8082`       | HTTP port                        |
+| `DATABASE_PATH` | `.db/api.db` | SQLite database file             |
+| `LOG_LEVEL`     | `info`       | Winston log level                |
+
+## Linting
 
 ```sh
-mkdir -p .db
-npm run database:seed
+npm run lint        # ESLint with --fix
+npm run typecheck   # tsc --noEmit
 ```
 
 ## Using This Template

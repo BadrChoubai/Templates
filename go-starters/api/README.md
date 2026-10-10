@@ -7,32 +7,47 @@ building, linting, containerizing, and running the application.
 
 Ensure you have the following installed:
 
-- [Go](https://go.dev/) (Latest stable version recommended)
+- [Go](https://go.dev/) 1.26 or later
 - [Docker](https://www.docker.com/) (For containerized builds)
 - [golangci-lint](https://golangci-lint.run/) (For linting)
 - [Make](https://www.gnu.org/software/make/) (For build automation)
 
 ## Running the Application
 
-### Build the Project
-
-Build our application's docker image
+### Configure the Environment
 
 ```sh
-make build
+cp .env.example .env
 ```
 
-### Run the Application
-
-To run the application locally:
+### Create the Database
 
 ```sh
-make run
+mkdir -p .db
+make db/migrations/up
 ```
 
-### Clean Build Artifacts
+See [Database Migrations](#database-migrations) for installing `migrate`.
 
-To remove build artifacts:
+### Run Locally
+
+```sh
+make dev
+```
+
+The API is then available at `http://localhost:8084`; see `api/api.http` for
+example requests.
+
+### Build and Run the Docker Image
+
+```sh
+make       # builds the image
+make run   # builds the image and starts it with docker compose
+```
+
+### Stop the Containers
+
+To stop and remove the docker compose containers:
 
 ```sh
 make clean
@@ -54,8 +69,6 @@ Database migrations are driven by tasks in `/migrations/Makefile`.
 
 [Documentation](./migrations/README.md)
 
-This will generate a Dockerfile and build the corresponding image.
-
 ## Project Structure
 
 ```
@@ -73,11 +86,12 @@ This will generate a Dockerfile and build the corresponding image.
 ├── Dockerfile
 ├── docker-compose.yml
 ├── Makefile
+├── .env.example      # Example environment variables
 └── .env              # Environment variables (not committed)
 ```
 
 ## Using This Template
 
 1. Rename the module in `go.mod` (`github.com/badrchoubai/api`) and update imports.
-2. Set `DOCKER_IMAGE_NAME` in `Makefile` and `CONNECTION_STRING` in `migrations/Makefile`.
+2. Set `DOCKER_IMAGE` and `DB_CONNECTION_STRING` in `.env.example`.
 3. Replace the example `items` resource in `internal/` and `migrations/` with your own.

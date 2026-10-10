@@ -5,5 +5,5 @@ namespace Api.Repository;
 public interface IDataRepository
 {
     Task<List<Item>> GetItems();
-    Task<Item> GetItem(Guid itemId);
+    Task<Item?> GetItem(Guid itemId);
 }

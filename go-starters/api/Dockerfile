@@ -1,4 +1,6 @@
-FROM golang:1.24 AS builder
+ARG GO_VERSION=1.26
+
+FROM golang:${GO_VERSION}-bookworm AS builder
 
 ARG OS="linux"
 ARG ARCH="amd64"
@@ -12,20 +14,19 @@ COPY cmd/ cmd/
 COPY internal/ internal/
 COPY pkg/ pkg/
 
+# go-sqlite3 requires cgo; it bundles SQLite, so no system library is needed at runtime.
 ENV CGO_ENABLED=1 GOOS=${OS} GOARCH=${ARCH}
 
-RUN go build -o main ./cmd/api/main.go
+RUN go build -o main ./cmd/api
 
-FROM debian:latest AS final
-
-RUN apt-get update && apt-get install -y libsqlite3-dev sqlite3
+FROM debian:bookworm-slim AS final
 
 WORKDIR /root/
 
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/main .
 
-RUN chmod +x main
+EXPOSE 8084
 
 # Command to run the executable
 CMD ["./main"]

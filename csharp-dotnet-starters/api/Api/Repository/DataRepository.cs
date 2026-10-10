@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-
 using Api.Model;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Repository
 {
@@ -11,7 +11,7 @@ namespace Api.Repository
             return await dbContext.Items.ToListAsync();
         }
 
-        public async Task<Item> GetItem(Guid id)
+        public async Task<Item?> GetItem(Guid id)
         {
             return await dbContext.Items.FirstOrDefaultAsync(i => i.Id == id);
         }

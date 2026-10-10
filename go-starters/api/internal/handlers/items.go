@@ -1,16 +1,19 @@
+// Package handlers implements the API's HTTP handlers.
 package handlers
 
 import (
 	"database/sql"
 	"errors"
-	"github.com/google/uuid"
 	"net/http"
+
+	"github.com/google/uuid"
 
 	"github.com/badrchoubai/api/internal/data"
 	"github.com/badrchoubai/api/internal/repository"
 	"github.com/badrchoubai/api/pkg/encoding"
 )
 
+// GetItems responds with every item and the item count.
 func GetItems(itemsRepository repository.Repository) http.Handler {
 	type ListResponse struct {
 		Items []*data.Item `json:"items"`
@@ -38,6 +41,7 @@ func GetItems(itemsRepository repository.Repository) http.Handler {
 	})
 }
 
+// GetItem responds with the item identified by the {id} path value.
 func GetItem(itemsRepository repository.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id, err := uuid.Parse(r.PathValue("id"))
