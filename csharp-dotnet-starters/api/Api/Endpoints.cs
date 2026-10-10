@@ -1,0 +1,21 @@
+using Api.Extensions;
+using Api.Service;
+
+namespace Api;
+
+internal static class Endpoints
+{
+    public static void MapItemsApi(
+        this IEndpointRouteBuilder routes)
+    {
+        var group = routes.MapGroup("/items");
+        group.RequirePerUserRateLimit();
+
+        group.WithTags("Items");
+        group.WithOpenApi();
+
+        group.MapGet("/", async (IApiService service) => await service.GetAll());
+        group.MapGet("/{id:guid}", async (IApiService service, Guid id) =>
+            await service.GetItem(id) is { } item ? Results.Ok(item) : Results.NotFound());
+    }
+}

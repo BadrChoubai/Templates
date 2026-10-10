@@ -1,0 +1,6 @@
+.dist/
+tmp
+.idea
+.Dockerfile*
+.Image*
+.db

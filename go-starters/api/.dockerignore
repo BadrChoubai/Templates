@@ -1,0 +1,28 @@
+# Exclude version control files
+.git
+.gitignore
+
+# Exclude local development files
+*.env
+*.log
+node_modules/
+tmp/
+dist/
+bin/
+coverage/
+.DS_Store
+
+# Exclude editor-specific files
+.vscode/
+.idea/
+*.swp
+
+# Exclude Docker-related files
+docker-compose*.yml
+
+# Exclude non-essential directories
+api/
+build/
+migrations/
+README.md
+Makefile

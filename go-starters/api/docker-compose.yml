@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${DOCKER_IMAGE}-${ENVIRONMENT}
+    env_file:
+      - .env
+    image: "${REGISTRY}/${DOCKER_IMAGE}"
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    volumes:
+      - "./.db:/root/.db"
+    working_dir: /root

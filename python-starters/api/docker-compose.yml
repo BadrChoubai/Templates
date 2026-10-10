@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${DOCKER_IMAGE}-${ENVIRONMENT}
+    env_file:
+      - .env
+    image: "${REGISTRY}/${DOCKER_IMAGE}"
+    ports:
+      - "${HTTP_PORT}:8000"
