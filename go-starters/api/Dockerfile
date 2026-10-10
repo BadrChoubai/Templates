@@ -23,6 +23,9 @@ FROM debian:bookworm-slim AS final
 
 WORKDIR /root/
 
+# SQLite creates the database file but not its directory.
+RUN mkdir -p .db
+
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/main .
 

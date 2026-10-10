@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    name: Go starter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go-starters/api
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go-starters/api/go.mod
+          cache-dependency-path: go-starters/api/go.sum
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14
+          working-directory: go-starters/api
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test -race ./...
+
+      - name: Build Docker image
+        run: docker build -t go-api .
+
+      - name: Smoke test Docker image
+        run: |
+          docker run -d --name go-api -p 8084:8084 go-api
+          for _ in $(seq 30); do
+            curl --fail --silent http://localhost:8084/health && exit 0
+            sleep 1
+          done
+          docker logs go-api
+          exit 1
+
+  csharp:
+    name: C# starter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: csharp-dotnet-starters/api
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore Api.slnx
+
+      - name: Check formatting
+        run: dotnet format Api.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build Api.slnx --no-restore -warnaserror
+
+      - name: Test
+        run: dotnet test --no-build
+
+      - name: Build Docker image
+        run: docker build -t csharp-api .
+
+      - name: Smoke test Docker image
+        run: |
+          docker run -d --name csharp-api -p 8086:8080 csharp-api
+          for _ in $(seq 30); do
+            if curl --fail --silent http://localhost:8086/health; then
+              curl --fail --silent http://localhost:8086/items/
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs csharp-api
+          exit 1
