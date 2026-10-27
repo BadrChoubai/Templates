@@ -52,6 +52,33 @@ jobs:
           docker logs go-api
           exit 1
 
+  astro:
+    name: Astro starter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: javascript-starters/astro
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: javascript-starters/astro/.nvmrc
+          cache: npm
+          cache-dependency-path: javascript-starters/astro/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
   csharp:
     name: C# starter
     runs-on: ubuntu-latest

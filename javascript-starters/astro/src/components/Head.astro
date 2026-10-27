@@ -1,0 +1,64 @@
+---
+import { SITE } from "../site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Social card image, as a path or URL; omitted when not given */
+  image?: string;
+  noindex?: boolean;
+}
+let {
+  title = SITE.title,
+  description = SITE.description,
+  image,
+  noindex = false,
+} = Astro.props;
+
+if (title !== SITE.title) {
+  title = `${title} | ${SITE.title}`;
+}
+
+const ogImage = image && new URL(image, Astro.site).href;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!-- Page title -->
+<title>{title}</title>
+<!-- Slot for extra tags -->
+<slot />
+
+<!-- Metadata -->
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+{noindex && <meta name="robots" content="noindex,nofollow" />}
+
+<!-- Icons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta
+  name="theme-color"
+  media="(prefers-color-scheme: light)"
+  content={SITE.themeColor.light}
+/>
+<meta
+  name="theme-color"
+  media="(prefers-color-scheme: dark)"
+  content={SITE.themeColor.dark}
+/>
+
+<!-- OpenGraph -->
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{ogImage && <meta property="og:image" content={ogImage} />}
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:type" content="website" />
+
+<!-- Twitter Card -->
+<meta
+  name="twitter:card"
+  content={ogImage ? "summary_large_image" : "summary"}
+/>
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{ogImage && <meta name="twitter:image" content={ogImage} />}

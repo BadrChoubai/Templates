@@ -1,0 +1,29 @@
+/* =========================================================
+   Document — box model resets & global rendering
+   ========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background-color: var(--app-background-color);
+  color: var(--app-color);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size);
+  font-weight: var(--app-font-weight);
+  line-height: var(--app-line-height);
+  overflow-wrap: break-word;
+  tab-size: 4;
+}
+
+@media print {
+  #header,
+  #footer,
+  .back-to-top {
+    display: none;
+  }
+}

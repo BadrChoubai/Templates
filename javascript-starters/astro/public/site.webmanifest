@@ -1,0 +1,14 @@
+{
+  "name": "Astro Starter",
+  "short_name": "Starter",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#1d5bd8",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

@@ -1,0 +1,141 @@
+---
+interface Props {
+  /** How far down the page, in pixels, before the button appears */
+  threshold?: number;
+  /**
+   * Distance from the bottom of the viewport, as any CSS length, e.g.
+   * "5rem". Defaults to 3.4rem on wide screens and 1rem on mobile.
+   */
+  bottom?: string;
+}
+
+const { threshold = 300, bottom } = Astro.props;
+---
+
+<!-- Revealed by the script; without JavaScript there's no back-to-top control
+     unless the footer's link is kept (Footer's backToTop prop) -->
+<button
+  type="button"
+  class="back-to-top"
+  aria-label="Back to top"
+  data-threshold={threshold}
+  style={bottom && `--back-to-top-bottom: ${bottom}`}
+  hidden
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.67"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M5.83 9.17 10 5l4.17 4.17M5.83 15 10 10.83 14.17 15"></path>
+  </svg>
+</button>
+
+<script>
+  /**
+   * Back-to-top button. The ClientRouter swaps in a fresh button on every
+   * navigation, so listeners live on the document and setup reruns after
+   * each swap.
+   */
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const button = () =>
+    document.querySelector<HTMLButtonElement>("button.back-to-top");
+
+  let frame = 0;
+  function update() {
+    frame = 0;
+    const el = button();
+    if (!el) return;
+    const threshold = Number(el.dataset.threshold) || 300;
+    el.toggleAttribute("data-visible", window.scrollY >= threshold);
+  }
+
+  function setup() {
+    const el = button();
+    if (!el) return;
+    el.hidden = false;
+    update();
+  }
+
+  setup();
+  document.addEventListener("astro:after-swap", setup);
+
+  // At most one update per frame, however fast the scroll events come
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target as Element).closest("button.back-to-top")) return;
+    window.scrollTo({
+      top: 0,
+      behavior: reducedMotion.matches ? "auto" : "smooth",
+    });
+    // The button hides once at the top; hand focus to the start of the page
+    // so keyboard users aren't stranded at the bottom
+    document
+      .querySelector<HTMLElement>("#header a")
+      ?.focus({ preventScroll: true });
+  });
+</script>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    right: 3.4rem;
+    bottom: var(--back-to-top-bottom, 3.4rem);
+    z-index: 15; /* above sticky in-page bars, below the mobile menu */
+    display: grid;
+    place-items: center;
+    padding: 0.75rem;
+
+    /* Hidden until scrolled; visibility keeps it out of the tab order too */
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--app-transition),
+      visibility var(--app-transition),
+      background-color var(--app-transition);
+
+    &[data-visible] {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    &:hover {
+      background-color: var(--app-accent-background--hover);
+    }
+
+    &[hidden] {
+      display: none;
+    }
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .back-to-top {
+      right: 1rem;
+      bottom: var(--back-to-top-bottom, 1rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .back-to-top {
+      transition: none;
+    }
+  }
+</style>

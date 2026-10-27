@@ -1,0 +1,226 @@
+/* =========================================================
+   BASE — imports first, then layout & component styles
+   ========================================================= */
+@import url("./document.css");
+@import url("./colors.css");
+@import url("./typography.css");
+
+:root {
+  /* Spacing */
+  --app-spacing: 1rem;
+  /* Space between the page edge and the content */
+  --app-block-spacing-horizontal: clamp(1rem, 4vw, 2rem);
+  /* Space above and below each section */
+  --app-section-spacing: clamp(2.5rem, 6vw, 4rem);
+
+  /* Borders & shape */
+  --app-border-radius: 0.375rem;
+  --app-border-width: 1px;
+  --app-rule-width: 1px;
+
+  /* Motion */
+  --app-transition: 0.2s ease-in-out;
+
+  /* Container */
+  --app-container-max: 72rem;
+}
+
+/* =========================================================
+   Document landmarks
+   ========================================================= */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  margin: 0;
+}
+
+/* Pushes the footer to the bottom on short pages */
+main {
+  flex: 1 0 auto;
+}
+
+/* =========================================================
+   Layout: container & sections
+   ========================================================= */
+.container {
+  width: 100%;
+  max-width: var(--app-container-max);
+  margin-inline: auto;
+  padding-inline: var(--app-block-spacing-horizontal);
+}
+
+section {
+  padding-block: var(--app-section-spacing);
+}
+
+section + section {
+  border-top: var(--app-rule-width) solid var(--app-rule-color);
+}
+
+/* =========================================================
+   Media
+   ========================================================= */
+img,
+picture,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================================================
+   Links
+   ========================================================= */
+a {
+  color: var(--app-accent-color);
+  text-underline-offset: 0.2em;
+  transition: color var(--app-transition);
+}
+
+a:hover {
+  color: var(--app-accent-color--hover);
+}
+
+:focus-visible {
+  outline: 2px solid var(--app-accent-color);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Nav — a row of plain links
+   ========================================================= */
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--app-spacing);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav a {
+  color: var(--app-color);
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: var(--app-accent-color);
+}
+
+/* =========================================================
+   Buttons — <button> and links styled as one with .btn
+   Variants: .primary (default fill), .ghost (outline), .sm
+   ========================================================= */
+button {
+  font: inherit;
+}
+
+button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: var(--app-border-width) solid transparent;
+  border-radius: var(--app-border-radius);
+  background-color: var(--app-accent-background);
+  color: var(--app-accent-contrast);
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--app-transition),
+    border-color var(--app-transition),
+    color var(--app-transition);
+}
+
+button:hover,
+.btn:hover {
+  background-color: var(--app-accent-background--hover);
+  color: var(--app-accent-contrast);
+}
+
+.btn.ghost {
+  border-color: var(--app-border-color);
+  background-color: transparent;
+  color: var(--app-color);
+}
+
+.btn.ghost:hover {
+  border-color: var(--app-color);
+  background-color: transparent;
+  color: var(--app-color);
+}
+
+.btn.sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* =========================================================
+   Form fields
+   ========================================================= */
+input,
+select,
+textarea {
+  padding: 0.5rem 0.75rem;
+  border: var(--app-border-width) solid var(--app-border-color);
+  border-radius: var(--app-border-radius);
+  background-color: var(--app-background-color);
+  color: var(--app-color);
+  font: inherit;
+}
+
+/*
+ * iOS Safari zooms the page into any field under 16px when it's focused, and
+ * doesn't zoom back out. On touch screens, hold fields at 16px or more even
+ * when a component sets them smaller; mouse users can still get small fields.
+ */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: max(1em, 16px) !important;
+  }
+}
+
+/* =========================================================
+   Accessibility
+   ========================================================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip link: float over the header when focused instead of collapsing */
+.skip-link:focus {
+  position: fixed;
+  top: var(--app-spacing);
+  left: var(--app-spacing);
+  z-index: 100;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.625rem 1rem;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,35 @@
+---
+interface Props {
+  class?: string;
+  coverImage?: string;
+  id: string;
+}
+
+const { class: className, coverImage, id } = Astro.props;
+
+const coverImageStyle = coverImage
+  ? `background-image: url(${coverImage});`
+  : undefined;
+---
+
+<section
+  class:list={[
+    `section--${id}`,
+    { "section--with-cover-image": !!coverImage },
+    "container",
+    className,
+  ]}
+  id={id}
+  style={coverImageStyle}
+>
+  <slot />
+</section>
+
+<style>
+  /* Cover image variant — everything else is in base.css */
+  .section--with-cover-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>
