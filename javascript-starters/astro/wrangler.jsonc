@@ -1,0 +1,16 @@
+// Deploys the static build in ./dist as a Cloudflare Worker with static assets.
+// https://developers.cloudflare.com/workers/static-assets/
+{
+  "name": "astro-starter",
+  "compatibility_date": "2026-10-01",
+  // Serves the site at <name>.<your-subdomain>.workers.dev; turn off once
+  // a custom domain is set up below
+  "workers_dev": true,
+  // "routes": [{ "pattern": "example.com", "custom_domain": true }],
+  "assets": {
+    "directory": "./dist",
+  },
+  "observability": {
+    "enabled": true,
+  },
+}

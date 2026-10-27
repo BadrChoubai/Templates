@@ -1,0 +1,204 @@
+---
+import { SITE } from "../site";
+
+interface Props {
+  /** Names the site in the logo link and its label */
+  title?: string;
+}
+
+const { title = SITE.title } = Astro.props;
+---
+
+<header id="header" class="container">
+  <a href="/" class="logo" aria-label={`${title} — home`}>
+    {title}
+  </a>
+  <nav aria-label="Site navigation">
+    <!-- Revealed by the script; without it the links wrap onto their own row -->
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-controls="site-menu"
+      aria-expanded="false"
+      hidden
+    >
+      <span class="menu-toggle__icon" aria-hidden="true"></span>
+      menu
+    </button>
+    <!-- The site passes its menu items in as <li>s -->
+    <ul id="site-menu">
+      <slot />
+    </ul>
+  </nav>
+</header>
+
+<script>
+  /**
+   * Mobile menu. The ClientRouter swaps in a fresh header on every
+   * navigation, so listeners live on the document and setup reruns after
+   * each swap.
+   */
+  const mobile = window.matchMedia("(max-width: 749px)");
+  const toggle = () =>
+    document.querySelector<HTMLButtonElement>("#header .menu-toggle");
+
+  const setOpen = (open: boolean) =>
+    toggle()?.setAttribute("aria-expanded", String(open));
+  const isOpen = () => toggle()?.getAttribute("aria-expanded") === "true";
+
+  function setup() {
+    const button = toggle();
+    if (!button) return;
+    button.hidden = false;
+    button.closest("header")!.toggleAttribute("data-menu", true);
+  }
+
+  setup();
+  document.addEventListener("astro:after-swap", setup);
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Element;
+    if (target.closest("#header .menu-toggle")) setOpen(!isOpen());
+    // Following a link (even a same-page #hash) or tapping elsewhere closes it
+    else if (
+      isOpen() &&
+      (target.closest("#site-menu a") || !target.closest("#header"))
+    )
+      setOpen(false);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isOpen()) {
+      setOpen(false);
+      toggle()?.focus();
+    }
+  });
+
+  mobile.addEventListener("change", () => setOpen(false));
+</script>
+
+<style>
+  #header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 1rem;
+    background-color: var(--app-background-color);
+  }
+
+  .logo {
+    color: var(--app-color);
+    font-family: var(--app-font-family-headings);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-color: var(--app-border-color);
+    background: none;
+    color: var(--app-color);
+    font-weight: 500;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  /* Three bars, which turn into an × while the menu is open */
+  .menu-toggle__icon {
+    position: relative;
+    width: 1rem;
+    height: 2px;
+    background-color: currentColor;
+    transition: background-color var(--app-transition);
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: currentColor;
+      transition: transform var(--app-transition);
+    }
+
+    &::before {
+      transform: translateY(-5px);
+    }
+
+    &::after {
+      transform: translateY(5px);
+    }
+  }
+
+  .menu-toggle[aria-expanded="true"] .menu-toggle__icon {
+    background-color: transparent;
+
+    &::before {
+      transform: rotate(45deg);
+    }
+
+    &::after {
+      transform: rotate(-45deg);
+    }
+  }
+
+  @media (max-width: 749px) {
+    #header {
+      position: relative;
+      z-index: 20; /* above sticky in-page bars */
+    }
+
+    /* No script: the links take their own row under the logo */
+    #header:not([data-menu]) {
+      flex-wrap: wrap;
+
+      nav {
+        flex-basis: 100%;
+      }
+    }
+
+    /* Script: the links drop down as a full-width panel */
+    #header[data-menu] #site-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      padding: 0.5rem var(--app-block-spacing-horizontal);
+      gap: 0;
+      background-color: var(--app-background-color);
+      border-bottom: var(--app-border-width) solid var(--app-border-color);
+    }
+
+    #header[data-menu] .menu-toggle[aria-expanded="false"] + ul {
+      display: none;
+    }
+
+    /* Full-width rows make for easy tap targets */
+    #header[data-menu] #site-menu :global(a) {
+      display: block;
+      padding: 0.75rem 0;
+    }
+  }
+
+  @media (min-width: 750px) {
+    .menu-toggle {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-toggle__icon,
+    .menu-toggle__icon::before,
+    .menu-toggle__icon::after {
+      transition: none;
+    }
+  }
+</style>
