@@ -1,0 +1,27 @@
+# The nginx image fills in ${API_URL} from the environment at startup and
+# leaves nginx's own $variables alone (it only substitutes variables that are
+# set in the environment).
+server {
+  listen 8080;
+  root /usr/share/nginx/html;
+
+  # Forward /api/items to ${API_URL}/items, so the app and API share an origin
+  location /api/ {
+    proxy_pass ${API_URL}/;
+    proxy_set_header Host $proxy_host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+
+  # Hashed build output never changes, so it can be cached for good
+  location /assets/ {
+    add_header Cache-Control "public, max-age=31536000, immutable";
+  }
+
+  # Every other path is a route in the app: serve index.html and let Vue Router
+  # handle it
+  location / {
+    try_files $uri $uri/ /index.html;
+    add_header Cache-Control "no-cache";
+  }
+}

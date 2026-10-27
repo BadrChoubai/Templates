@@ -1,0 +1,38 @@
+/* =========================================================
+   COLORS — every token has a light and a dark value; the page
+   follows the visitor's system setting. To force one scheme,
+   set `color-scheme: light` (or dark) on :root.
+   ========================================================= */
+:root {
+  color-scheme: light dark;
+
+  /* =========================================================
+       Surfaces & text
+       ========================================================= */
+  --app-background-color: light-dark(#ffffff, #121417);
+  /* Raised areas: cards, code, tags */
+  --app-surface-color: light-dark(#f3f4f6, #1d2025);
+  --app-color: light-dark(#1b1d21, #e6e8eb);
+  --app-muted-color: light-dark(#5b616b, #9aa1ab);
+  /* Component borders (cards, inputs) */
+  --app-border-color: light-dark(#d4d7dc, #353a42);
+  /* Layout rules (section dividers): quieter than component borders */
+  --app-rule-color: light-dark(#e5e7eb, #262a30);
+
+  /* =========================================================
+       Accent — links, focus rings, primary buttons
+       ========================================================= */
+  --app-accent-color: light-dark(#1d5bd8, #7ea6ff);
+  --app-accent-color--hover: light-dark(#1747a8, #a8c3ff);
+
+  /* Button fills: white text on these meets WCAG AA (4.5:1) */
+  --app-accent-background: #1d5bd8;
+  --app-accent-background--hover: #1747a8;
+  --app-accent-contrast: #ffffff;
+
+  /* =========================================================
+       Status — errors and invalid fields
+       ========================================================= */
+  --app-danger-color: light-dark(#b42318, #ff8a80);
+  --app-danger-background: light-dark(#fef3f2, #2a1514);
+}
